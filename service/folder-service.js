@@ -4,7 +4,7 @@ const tokenService = require('./token-service.js')
 
 class FolderService {
   async addFolder (refreshToken, name, title) {
-    const folder = await FolderModel.findOne({title})
+    const folder = await FolderModel.findOne({name})
     if (folder) {
       throw ApiError.BadRequest(`Категория "${title}" уже создана`)
     }

@@ -6,9 +6,9 @@ const tokenService = require('./token-service.js')
 class PostService {
   async addPost (refreshToken, title, description, folder, show, showAll) {
     const post = await PostModel.findOne({title})
-    if (post) {
-      throw ApiError.BadRequest(`Пост ${title} уже создан`)
-    }
+    // if (post) {
+    //   throw ApiError.BadRequest(`Пост ${title} уже создан`)
+    // }
     const folderName = await FolderModel.findOne({name: folder})
     if (!folderName) {
       throw ApiError.BadRequest(`Категории ${folder} нет`)
@@ -49,13 +49,13 @@ class PostService {
   }
 
   async getPosts(folder) {
-    const Post = PostModel.find({folder, status: 'active'});
+    const Post = PostModel.find({folder, status: 'active', show: true});
     return Post;
   }
 
   async getPostsFolderUser(refreshToken, folder) {
     const userData = await tokenService.validateRefreshToken(refreshToken);
-    const Post = PostModel.find({folder, user: userData.id});
+    const Post = PostModel.find({folder, user: userData.id, show: true});
     return Post;
   }
 
@@ -67,7 +67,7 @@ class PostService {
 
   async getPostsModeration(refreshToken) {
     const userData = await tokenService.validateRefreshToken(refreshToken);
-    const Post = PostModel.find({status: 'moderation'});
+    const Post = PostModel.find({status: 'moderation', showAll: true});
     return Post;
   }
 
