@@ -1,5 +1,6 @@
 require('dotenv').config()
 const express = require('express')
+const path = require('path')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const mongoose = require('mongoose')
@@ -25,6 +26,14 @@ const start = async () => {
       useUnifiedTopology: true
     })
     app.listen(PORT, () => console.log(`Server started on PORT = ${PORT}`))
+
+    app.use(express.static(__dirname))
+    app.use(express.static(path.relative(__dirname, 'client')))
+
+    app.get('*', (req, res) => {
+      res.sendfile(path.join(__dirname, 'client', 'index.html'))
+    })
+
   } catch (e) {
     console.log(e)
   }
