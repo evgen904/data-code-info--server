@@ -26,6 +26,17 @@ class UserService {
     return { ...tokens, user: userDto }
   }
 
+  async activationmail(refreshToken) {
+    if (!refreshToken) {
+      throw ApiError.UnauthorizedError()
+    }
+    const userData = await tokenService.validateRefreshToken(refreshToken);
+    const activationLink = uuid.v4()
+
+    await mailService.sendActivationmail(userData.email, `${process.env.API_URL}api/activate/${activationLink}`)
+    return { userData }
+  }
+
   async activate(activationLink) {
     const user = await UserModel.findOne({activationLink})
     if (!user) {

@@ -19,6 +19,17 @@ class UserController {
     }
   }
 
+  async activationmail(req, res, next) {
+    try {
+      const {refreshToken} = req.cookies;
+      const userData = await userService.activationmail(refreshToken)
+      // httpOnly нельзя получать и изменять куку внутри браузера
+      return res.json(userData)
+    } catch (e) {
+      next(e)
+    }
+  }
+
   async login(req, res, next) {
     try {
       const {email, password} = req.body;

@@ -13,7 +13,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: ['http://localhost:8080'],
+  origin: process.env.NODE_ENV === "development" ? ['http://localhost:8080'] : ['https://www.data-code-info.ru'],
   credentials: true
 }));
 app.use('/api', router);
@@ -21,10 +21,15 @@ app.use(errorMiddleware)
 
 const start = async () => {
   try {
-    await mongoose.connect(process.env.DB_URL, {
+    const mongooseConnect = {
       useNewUrlParser: true,
       useUnifiedTopology: true
-    })
+    }
+    if (process.env.NODE_ENV === "production") {
+      mongooseConnect["user"] = process.env.DB_USER
+      mongooseConnect["pass"] = process.env.DB_PSW
+    }
+    await mongoose.connect(process.env.DB_URL, mongooseConnect)
     app.listen(PORT, () => console.log(`Server started on PORT = ${PORT}`))
 
     app.use(express.static(__dirname))

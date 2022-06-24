@@ -16,7 +16,7 @@ router.post('/logout', userController.logout);
 router.get('/activate/:link', userController.activate);
 router.get('/refresh', userController.refresh);
 router.get('/users', authMiddleware, userController.getUsers);
-
+router.get('/activationmail', userController.activationmail);
 router.post('/role/add', authMiddleware, userController.roleAdd);
 
 router.post('/folder/add/', authMiddleware, folderController.add);
