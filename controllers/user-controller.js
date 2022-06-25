@@ -99,14 +99,7 @@ class UserController {
     try {
       const nameUser = req.body.nameUser
       const avatarUrl = req.file && req.file.filename ? req.file.filename : ""
-
-
-      //console.log(req.file.filename, "req.file.filename");
-
-
-      // const avatarUrl = req.file.filename
       const {refreshToken} = req.cookies;
-
       const userDataSet = await userService.setUser(refreshToken, nameUser, avatarUrl);
 
       return res.json(userDataSet)

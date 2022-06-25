@@ -109,8 +109,15 @@ class UserService {
     if (!userDataFind) {
       throw ApiError.BadRequest(`Пользователя ${userDataFind.email} нет в списке`)
     }
+    const updateUser = {}
+    if (nameUser) {
+      updateUser.nameUser = nameUser
+    }
+    if (avatarUrl) {
+      updateUser.avatarUrl = avatarUrl
+    }
 
-    const userDataSet = await userDataFind.updateOne({nameUser, avatarUrl})
+    const userDataSet = await userDataFind.updateOne(updateUser)
     return { userDataSet }
   }
 }
