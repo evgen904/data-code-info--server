@@ -94,6 +94,26 @@ class UserController {
       next(e)
     }
   }
+
+  async setUser(req, res, next) {
+    try {
+      const nameUser = req.body.nameUser
+      const avatarUrl = req.file && req.file.filename ? req.file.filename : ""
+
+
+      //console.log(req.file.filename, "req.file.filename");
+
+
+      // const avatarUrl = req.file.filename
+      const {refreshToken} = req.cookies;
+
+      const userDataSet = await userService.setUser(refreshToken, nameUser, avatarUrl);
+
+      return res.json(userDataSet)
+    } catch (e) {
+      next(e)
+    }
+  }
 }
 
 module.exports = new UserController();

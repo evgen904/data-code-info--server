@@ -6,6 +6,7 @@ const router = new Router();
 const {body} = require('express-validator');
 const authMiddleware = require('../middlewares/auth-middleware');
 const roleMiddleware = require('../middlewares/role-middleware');
+const upload = require('../middlewares/upload');
 
 router.post('/registration',
   body('email').isEmail(),
@@ -18,6 +19,7 @@ router.get('/refresh', userController.refresh);
 router.get('/users', authMiddleware, userController.getUsers);
 router.get('/activationmail', userController.activationmail);
 router.post('/role/add', authMiddleware, userController.roleAdd);
+router.post('/user/set', authMiddleware, upload.single('image'), userController.setUser);
 
 router.post('/folder/add/', authMiddleware, folderController.add);
 router.post('/folder/remove/', authMiddleware, folderController.remove);

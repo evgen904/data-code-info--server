@@ -98,6 +98,21 @@ class UserService {
     const roleData = await RoleModel.create({value: role})
     return { roleData }
   }
+
+  async setUser(refreshToken, nameUser, avatarUrl) {
+    if (!refreshToken) {
+      throw ApiError.UnauthorizedError()
+    }
+    const userData = await tokenService.validateRefreshToken(refreshToken);
+
+    const userDataFind = await UserModel.findOne({email: userData.email});
+    if (!userDataFind) {
+      throw ApiError.BadRequest(`Пользователя ${userDataFind.email} нет в списке`)
+    }
+
+    const userDataSet = await userDataFind.updateOne({nameUser, avatarUrl})
+    return { userDataSet }
+  }
 }
 
 module.exports = new UserService()
