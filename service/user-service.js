@@ -8,15 +8,22 @@ const UserDto = require('../dtos/user-dtos')
 const ApiError = require('../exceptions/api-error')
 
 class UserService {
-  async registration(email, password) {
+  async registration(email, password, login) {
+    if (!login) {
+      throw ApiError.BadRequest(`Логин не указан `)
+    }
     const candidate = await UserModel.findOne({email})
     if (candidate) {
       throw ApiError.BadRequest(`Пользователь с почтовым адресом ${email} уже сущетсвует`)
     }
+    const candidateLogin = await UserModel.findOne({login})
+    if (candidateLogin) {
+      throw ApiError.BadRequest(`Пользователь с логином ${login} уже сущетсвует`)
+    }
     const hashPassword = await bcrypt.hash(password, 3)
     const activationLink = uuid.v4()
     const userRole = await RoleModel.findOne({value: 'USER'})
-    const user = await UserModel.create({email, password: hashPassword, activationLink, roles: [userRole.value]})
+    const user = await UserModel.create({email, login, password: hashPassword, activationLink, roles: [userRole.value]})
     await mailService.sendActivationmail(email, `${process.env.API_URL}api/activate/${activationLink}`)
 
     const userDto = new UserDto(user); // id, email, isActivated, roles
@@ -31,9 +38,9 @@ class UserService {
       throw ApiError.UnauthorizedError()
     }
     const userData = await tokenService.validateRefreshToken(refreshToken);
-    const activationLink = uuid.v4()
+    const user = await UserModel.findOne({email: userData.email})
 
-    await mailService.sendActivationmail(userData.email, `${process.env.API_URL}api/activate/${activationLink}`)
+    await mailService.sendActivationmail(userData.email, `${process.env.API_URL}api/activate/${user.activationLink}`)
     return { userData }
   }
 
@@ -46,10 +53,10 @@ class UserService {
     user.save()
   }
 
-  async login (email, password) {
-    const user = await UserModel.findOne({email})
+  async login (login, password) {
+    const user = await UserModel.findOne({login})
     if (!user) {
-      throw ApiError.BadRequest('Пользователь с таким email не был найден')
+      throw ApiError.BadRequest(`Пользователь ${login} не был найден`)
     }
     const isPassEquals = await bcrypt.compare(password, user.password)
     if(!isPassEquals) {
@@ -116,6 +123,14 @@ class UserService {
     if (avatarUrl) {
       updateUser.avatarUrl = avatarUrl
     }
+
+    console.log(avatarUrl, "avatarUrl");
+
+
+    if (avatarUrl === " ") {
+      updateUser.avatarUrl = ""
+    }
+
 
     const userDataSet = await userDataFind.updateOne(updateUser)
     return { userDataSet }

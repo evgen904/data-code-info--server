@@ -49,7 +49,7 @@ class PostService {
   }
 
   async getPosts(folder) {
-    const Post = PostModel.find({folder, status: 'active', show: true});
+    const Post = PostModel.find({folder, status: 'active', show: true}).populate({path: 'user', select: 'login avatarUrl'});
     return Post;
   }
 

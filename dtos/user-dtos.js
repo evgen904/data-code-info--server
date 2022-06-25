@@ -1,4 +1,5 @@
 module.exports = class UseDto {
+  login;
   email;
   id;
   isActivated;
@@ -7,6 +8,7 @@ module.exports = class UseDto {
   nameUser;
 
   constructor(model) {
+    this.login = model.login;
     this.email = model.email;
     this.avatarUrl = model.avatarUrl;
     this.nameUser = model.nameUser;
