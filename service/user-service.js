@@ -124,14 +124,6 @@ class UserService {
       updateUser.avatarUrl = avatarUrl
     }
 
-    console.log(avatarUrl, "avatarUrl");
-
-
-    if (avatarUrl === " ") {
-      updateUser.avatarUrl = ""
-    }
-
-
     const userDataSet = await userDataFind.updateOne(updateUser)
     return { userDataSet }
   }
